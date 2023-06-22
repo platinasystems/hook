@@ -17,7 +17,7 @@ The following steps were tested on Ubuntu 20.04.6 LTS (Focal Fossa).
   - docker run --rm -ti -v $(pwd):/src:z quay.io/tinkerbell/kconfig
   - cd linux-5-10 ; make menuconfig
   - do manual kernel config customisation (e.g. enable some device driver like CONFIG_SCSI_MPT3SAS), save and exit
-  - cp .config /src/config-5.10.x-x86
+  - cp .config /src/config-5.10.x-x86_64
   - exit from docker container
   - make devbuild_5.10.x
 
@@ -28,4 +28,5 @@ The following steps were tested on Ubuntu 20.04.6 LTS (Focal Fossa).
   - deploy out/sha-xxxxxxx/rel/hook_x86_64.tar.gz archive to platina.io
 
 - configure tinkerbell
-  - update OSIE_DOWNLOAD_URLS variable in /opt/platina/pcc/bare_metal/deploy/compose/.env with full URL from platina.io
+  - update OSIE_DOWNLOAD_URLS variable in /opt/platina/pcc/bare_metal/deploy/compose/.env with full URL from platina.io (https://platina.io/public/hook_x86_64.tar.gz)
+  - restart tinkerbell containers using docker compose
