@@ -1,5 +1,5 @@
 kernel:
-  image: quay.io/tinkerbell/hook-kernel:5.10.85-5604bb0dc1cdb6263770a82bf91cbf7e00ffdd5c-dirty
+  image: quay.io/tinkerbell/hook-kernel:5.10.85-4fe9d417745026ee14c5e103546bb2e644bf38b2
   cmdline: "console=tty0 console=ttyS0 console=ttyAMA0 console=ttysclp0"
 
 init:
@@ -24,6 +24,14 @@ onboot:
     runtime:
       mkdir:
         - /var/lib/dhcpcd
+
+  - name: check
+    image: nvkmod
+    binds:
+      - /dev:/dev
+      - /lib/modules:/lib/modules
+    capabilities:
+      - all
 
 services:
   - name: getty

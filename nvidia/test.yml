@@ -1,0 +1,17 @@
+kernel:
+  image: quay.io/tinkerbell/hook-kernel:5.10.85-4fe9d417745026ee14c5e103546bb2e644bf38b2
+  cmdline: "console=ttyS0 console=ttyAMA0"
+init:
+  - linuxkit/init:v0.8
+  - linuxkit/runc:v0.8
+onboot:
+  - name: check
+    image: nvkmod
+    binds:
+      - /dev:/dev
+      - /lib/modules:/lib/modules
+    capabilities:
+      - all
+  - name: poweroff
+    image: linuxkit/poweroff:401dc53c604c0b2179ed0369a6968fd4179cc176
+    command: ["/bin/sh", "/poweroff.sh", "3"]
