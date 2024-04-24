@@ -13,12 +13,19 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
     git checkout tags/v0.8.1 -b v0.8.1
     make
     make install
-    ```      
+    cd ..
+    ```
   - clone the hook repository
     ```shell
     git clone https://github.com/platinasystems/hook.git ; cd hook
     ```
-## building the kernel
+  - switch to specific branch if needed
+    ```shell
+    git checkout origin/<mybranch> -b <mybranch>
+    cd ..
+    ```
+
+## building the kernel (old alpine-based method)
   - make the kernel
     ```shell
     cd kernel
@@ -38,7 +45,20 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
     cd ..
     ```
 
-## building the NVIDIA driver
+## building the kernel (new ubuntu-based method)
+  - patch linuxkit
+    ```shell
+    cd linuxkit
+    patch -p1 < ../hook/linuxkit-ubuntu.patch
+    ```
+  - build the image
+    ```shell
+    cd contrib/foreign-kernels
+    sudo ./ubuntu.sh platina/kernel-ubuntu 5.15.0-102 112
+    cd ../../..
+    ```
+
+## building the NVIDIA driver for the alpine-based kernel
   - build it
     ```shell
     cd nvidia
@@ -51,8 +71,31 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
     ./test.sh
     ```
 
+## building the NVIDIA driver for the ubuntu-based kernel
+  - change the `ksrc` image tag and kernel version in the `COPY --from=build` line if needed
+  - build it
+    ```shell
+    cd nvidia-headless
+    docker build --no-cache -t nvhkmod .
+    cd ..
+    ```
+  - (optional) convenience script for developing: build + test
+    ```shell
+    apt install qemu-system-x86
+    ./test.sh
+    ```
+
 ## building hook
-  - update `kernel.image` name in `hook.yaml` file reflecting the output of `git ls-tree --full-tree HEAD | grep kernel | awk '{print $3}'`
+  - for alpine-based kernel:
+    - update `kernel.image` name in `hook-alpine.yaml` file reflecting the output of `git ls-tree --full-tree HEAD | grep kernel | awk '{print $3}'`
+    - ```shell
+      cp hook-alpine.yaml hook.yaml
+      ```
+  - for ubuntu-based kernel:
+    - update `kernel.image` name in `hook-ubuntu.yaml` file reflecting the chosen kernel version (eg. platina/kernel-ubuntu:5.15.0-102.112)
+    - ```shell
+      cp hook-ubuntu.yaml hook.yaml
+      ```
   - make it
     ```shell
     make dist
