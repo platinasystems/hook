@@ -92,12 +92,22 @@ func main() {
 			fmt.Sprintf("WORKER_ID=%s", cfg.workerID),
 			fmt.Sprintf("ID=%s", cfg.workerID),
 			fmt.Sprintf("container_uuid=%s", cfg.MetadataID),
+			fmt.Sprintf("NVIDIA_VISIBLE_DEVICES=%s", "all"),
 		},
 		AttachStdout: true,
 		AttachStderr: true,
 	}
 
 	tinkHostConfig := &container.HostConfig{
+		Binds: []string{
+			"/proc:/proc",
+			"/dev:/dev",
+			"/sys/bus:/sys/bus",
+			"/sys/class:/sys/class",
+			"/sys/dev:/sys/dev",
+			"/sys/devices:/sys/devices",
+			"/sys/module:/sys/module",
+		},
 		Mounts: []mount.Mount{
 			{
 				Type:   mount.TypeBind,
@@ -112,6 +122,7 @@ func main() {
 		},
 		NetworkMode: "host",
 		Privileged:  true,
+		CapAdd:      strslice.StrSlice{"all"},
 	}
 
 	authConfig := types.AuthConfig{

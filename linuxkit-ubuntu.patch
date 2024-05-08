@@ -32,11 +32,11 @@ diff --git a/contrib/foreign-kernels/ubuntu.sh b/contrib/foreign-kernels/ubuntu.
      echo
      echo "Example:"
 -    echo "$0 foobar/kernel-ubuntu 4.14.0-13 15"
-+    echo "$0 foobar/kernel-ubuntu 5.15.0-102 112"
++    echo "$0 foobar/kernel-ubuntu 5.15.0-105 115"
      echo
      echo "This will create a local LinuxKit kernel package:"
 -    echo "foobar/kernel-ubuntu:4.14.0-13.15"
-+    echo "foobar/kernel-ubuntu:5.15.0-102.112"
++    echo "foobar/kernel-ubuntu:5.15.0-105.115"
      echo "which you can then push to hub or just use locally"
      exit 1
  fi

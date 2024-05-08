@@ -54,7 +54,7 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
   - build the image
     ```shell
     cd contrib/foreign-kernels
-    sudo ./ubuntu.sh platina/kernel-ubuntu 5.15.0-102 112
+    sudo ./ubuntu.sh platina/kernel-ubuntu 5.15.0-105 115
     cd ../../..
     ```
 
@@ -92,7 +92,7 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
       cp hook-alpine.yaml hook.yaml
       ```
   - for ubuntu-based kernel:
-    - update `kernel.image` name in `hook-ubuntu.yaml` file reflecting the chosen kernel version (eg. platina/kernel-ubuntu:5.15.0-102.112)
+    - update `kernel.image` name in `hook-ubuntu.yaml` file reflecting the chosen kernel version (eg. platina/kernel-ubuntu:5.15.0-105.115)
     - ```shell
       cp hook-ubuntu.yaml hook.yaml
       ```
