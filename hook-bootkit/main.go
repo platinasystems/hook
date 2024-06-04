@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types/strslice"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -44,6 +45,18 @@ type tinkConfig struct {
 
 	// tinkServerTLS is whether or not to use TLS for tink-server communication.
 	tinkServerTLS string
+
+	publisher publisherConfig
+}
+
+type publisherConfig struct {
+	Broker         string `json:"broker"`
+	SchemaRegistry string `json:"schemaRegistry"`
+	Topic          string `json:"topic"`
+	Host           string `json:"host"`
+	TargetHost     string `json:"targetHost"`
+	Period         string `json:"period"`
+	Buffer         string `json:"buffer"`
 }
 
 func main() {
@@ -93,6 +106,13 @@ func main() {
 			fmt.Sprintf("ID=%s", cfg.workerID),
 			fmt.Sprintf("container_uuid=%s", cfg.MetadataID),
 			fmt.Sprintf("NVIDIA_VISIBLE_DEVICES=%s", "all"),
+			fmt.Sprintf("SCHEMA_REGISTRY=%s", cfg.publisher.SchemaRegistry),
+			fmt.Sprintf("BROKER=%s", cfg.publisher.Broker),
+			fmt.Sprintf("TOPIC=%s", cfg.publisher.Topic),
+			fmt.Sprintf("HOST=%s", cfg.publisher.Host),
+			fmt.Sprintf("TARGET_HOST=%s", cfg.publisher.TargetHost),
+			fmt.Sprintf("SAMPLING_PERIOD=%s", cfg.publisher.Period),
+			fmt.Sprintf("SAMPLING_BUFFER=%s", cfg.publisher.Buffer),
 		},
 		AttachStdout: true,
 		AttachStderr: true,
@@ -241,7 +261,10 @@ func (cfg *tinkConfig) metaDataQuery() error {
 	}
 
 	var metadata struct {
-		ID string `json:"id"`
+		ID       string `json:"id"`
+		Metadata struct {
+			Publisher publisherConfig `json:"publisher"`
+		} `json:"metadata"`
 	}
 
 	jsonErr := json.Unmarshal(body, &metadata)
@@ -250,5 +273,6 @@ func (cfg *tinkConfig) metaDataQuery() error {
 	}
 
 	cfg.MetadataID = metadata.ID
+	cfg.publisher = metadata.Metadata.Publisher
 	return err
 }
