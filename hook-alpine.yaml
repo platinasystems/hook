@@ -58,6 +58,7 @@ services:
     image: linuxkit/openntpd:v0.8
     binds:
       - /var/run:/var/run
+      - /etc/resolv.conf:/etc/resolv.conf
 
   - name: hook-docker
     image: quay.io/tinkerbell/hook-docker:latest
