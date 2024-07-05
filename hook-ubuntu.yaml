@@ -66,6 +66,9 @@ services:
       - /var/run:/var/run
       - /etc/resolv.conf:/etc/resolv.conf
 
+  - name: node_exporter
+    image: linuxkit/node_exporter:9bcd8479b7ba2844773ef4f01a60c901c4800982
+
   - name: hook-docker
     image: quay.io/tinkerbell/hook-docker:latest
     capabilities:
@@ -114,12 +117,17 @@ services:
       - /sys/dev:/sys/dev
       - /sys/devices:/sys/devices
       - /sys/module:/sys/module
+      - /run:/run
     runtime:
       mkdir:
         - /var/run/docker
 
-#dbg  - name: sshd
-#dbg    image: linuxkit/sshd:666b4a1a323140aa1f332826164afba506abf597
+  - name: sshd
+    image: linuxkit/sshd:75f399fbfb6455dfccd4cb30543d0b4b494d28c8
+    binds.add:
+      - /run/authorized_keys:/root/.ssh/authorized_keys
+      - /etc/profile.d/local.sh:/etc/profile.d/local.sh
+      - /etc/motd:/etc/motd
 
 files:
   - path: etc/profile.d/local.sh
@@ -140,10 +148,8 @@ files:
       options nouveau modeset=0
     mode: "0644"
 
-#dbg  - path: root/.ssh/authorized_keys
-#dbg    source: ~/.ssh/id_rsa.pub
-#dbg    mode: "0600"
-#dbg    optional: true
+  - path: root/.ssh/
+    directory: true
 
 trust:
   org:

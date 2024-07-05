@@ -46,7 +46,8 @@ type tinkConfig struct {
 	// tinkServerTLS is whether or not to use TLS for tink-server communication.
 	tinkServerTLS string
 
-	publisher publisherConfig
+	publisher  publisherConfig
+	sshdConfig sshdConfig
 }
 
 type publisherConfig struct {
@@ -57,6 +58,10 @@ type publisherConfig struct {
 	TargetHost     string `json:"targetHost"`
 	Period         string `json:"period"`
 	Buffer         string `json:"buffer"`
+}
+
+type sshdConfig struct {
+	AuthorizedKeys []string `json:"authorizedKeys"`
 }
 
 func main() {
@@ -75,6 +80,12 @@ func main() {
 
 	// Get the ID from the metadata service
 	err = cfg.metaDataQuery()
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile(
+		"/run/authorized_keys", []byte(strings.Join(cfg.sshdConfig.AuthorizedKeys, "\n")), 0600)
 	if err != nil {
 		panic(err)
 	}
@@ -264,6 +275,7 @@ func (cfg *tinkConfig) metaDataQuery() error {
 		ID       string `json:"id"`
 		Metadata struct {
 			Publisher publisherConfig `json:"publisher"`
+			SSHConfig sshdConfig      `json:"sshdConfig"`
 		} `json:"metadata"`
 	}
 
@@ -274,5 +286,6 @@ func (cfg *tinkConfig) metaDataQuery() error {
 
 	cfg.MetadataID = metadata.ID
 	cfg.publisher = metadata.Metadata.Publisher
+	cfg.sshdConfig = metadata.Metadata.SSHConfig
 	return err
 }

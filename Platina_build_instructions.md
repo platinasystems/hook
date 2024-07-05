@@ -86,13 +86,29 @@ The following steps were tested on Ubuntu 22.04.4 LTS (Jammy Jellyfish).
     ```
 
 ## building hook
+
+  - build patched sshd module:
+    - ```shell
+      cd linuxkit
+      linuxkit pkg build --platforms "linux/amd64" --docker pkg/sshd
+      ```
+  - read tag from output, eg. from the following:
+```shell
+Loaded image: linuxkit/sshd:4696ba61c3ec091328e1c14857d77e675802342f-dirty-95b544b-amd64
+Tagging docker.io/linuxkit/sshd:4696ba61c3ec091328e1c14857d77e675802342f-dirty-95b544b-amd64 as docker.io/linuxkit/sshd:4696ba61c3ec091328e1c14857d77e675802342f-dirty-95b544b
+Build complete, not pushing, all done.
+``` 
+then the tag is `4696ba61c3ec091328e1c14857d77e675802342f-dirty-95b544b`.
+
   - for alpine-based kernel:
     - update `kernel.image` name in `hook-alpine.yaml` file reflecting the output of `git ls-tree --full-tree HEAD | grep kernel | awk '{print $3}'`
+    - update `linuxkit/sshd` tag in `hook-alpine.yaml` file reflecting the tag of previous step
     - ```shell
       cp hook-alpine.yaml hook.yaml
       ```
   - for ubuntu-based kernel:
     - update `kernel.image` name in `hook-ubuntu.yaml` file reflecting the chosen kernel version (eg. platina/kernel-ubuntu:5.15.0-105.115)
+    - update `linuxkit/sshd` tag in `hook-ubuntu.yaml` file reflecting the tag of previous step
     - ```shell
       cp hook-ubuntu.yaml hook.yaml
       ```
