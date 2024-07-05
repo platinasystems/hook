@@ -102,7 +102,7 @@ services:
         - /var/run/docker
 
   - name: sshd
-    image: linuxkit/sshd:75f399fbfb6455dfccd4cb30543d0b4b494d28c8
+    image: linuxkit/sshd:latest
     binds.add:
       - /run/authorized_keys:/root/.ssh/authorized_keys
       - /etc/profile.d/local.sh:/etc/profile.d/local.sh
