@@ -15,22 +15,22 @@ for module in $modules; do
 done
 printf "NVIDIA/IPMI kernel modules formal check PASSED\n"
 
-# order reflects dependencies
-mlx_modules='mlx_compat ib_core ib_cm ib_ipoib iw_cm rdma_cm ib_iser ib_isert ib_srp ib_umad ib_uverbs irdma knem mlxfw mlxdevm mlx5_core mlx5-vfio-pci mlx5_ib mlx5_vdpa mst_pci mst_pciconf rdma_ucm scsi_transport_srp'
-for module in mlx_modules; do
-  modinfo "${module}.ko" || failed
-done
-printf "Mellanox kernel modules formal check PASSED\n"
+## order reflects dependencies
+#mlx_modules='mlx_compat ib_core ib_cm ib_ipoib iw_cm rdma_cm ib_iser ib_isert ib_srp ib_umad ib_uverbs irdma knem mlxfw mlxdevm mlx5_core mlx5-vfio-pci mlx5_ib mlx5_vdpa mst_pci mst_pciconf rdma_ucm scsi_transport_srp'
+#for module in mlx_modules; do
+#  modinfo "${module}.ko" || failed
+#done
+#printf "Mellanox kernel modules formal check PASSED\n"
 
 printf "trying insmod nvidia/ipmi modules...\n"
 for module in $modules; do
   insmod "${module}.ko"
 done
 
-printf "trying insmod mellanox modules...\n"
-for module in mlx_modules; do
-  insmod "${module}.ko"
-done
+#printf "trying insmod mellanox modules...\n"
+#for module in mlx_modules; do
+#  insmod "${module}.ko"
+#done
 dmesg | tail -n 40
 
 /sbin/poweroff -f

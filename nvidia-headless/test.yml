@@ -1,5 +1,5 @@
 kernel:
-  image: platina/kernel-ubuntu:6.8.0-56.58
+  image: platina/kernel-ubuntu:5.15.0-105.115
   cmdline: "console=ttyS0 console=ttyAMA0"
 init:
   - linuxkit/init:v0.8
