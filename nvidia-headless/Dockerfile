@@ -1,20 +1,30 @@
-FROM platina/kernel-ubuntu:6.8.0-52.53 AS ksrc
-FROM ubuntu:jammy-20240530 AS build
+FROM platina/kernel-ubuntu:6.8.0-56.58 AS ksrc
+FROM ubuntu:noble-20250127 AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt update && apt install -y --no-install-recommends \
     gnupg2 curl ca-certificates
 
 RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb -o cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt update && apt install -y linux-headers-6.8.0-52-generic kmod nvidia-driver-560
-RUN apt install -y linux-modules-extra-6.8.0-52-generic
+RUN apt update && apt install -y linux-headers-6.8.0-56-generic kmod nvidia-driver-560
+RUN apt install -y linux-modules-extra-6.8.0-56-generic
+RUN apt install -y quilt bison lsb-base chrpath pkg-config tcl swig graphviz flex debhelper tk libfuse2t64 lsof ethtool pciutils
 
-FROM ubuntu:jammy-20240530
+## Mellanox OFED
+RUN curl --output MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz https://content.mellanox.com/ofed/MLNX_OFED-24.10-2.1.8.0/MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz && \
+    tar xf /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz && \
+    rm /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz
+WORKDIR MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64
+
+# take snapshot
+RUN ./mlnxofedinstall -k 6.8.0-56-generic --force --without-fw-update --without-xpmem-dkms --kernel-only -k 6.8.0-56-generic
+
+FROM ubuntu:noble-20250127
 RUN apt update && apt install -y kmod
-COPY --from=build /lib/modules/6.8.0-52-generic/updates/dkms/nvidia*.ko /
-COPY --from=build /usr/lib/modules/6.8.0-52-generic/kernel/drivers/char/ipmi/*.ko /
+COPY --from=build /lib/modules/6.8.0-56-generic/updates/dkms/*.ko /
+COPY --from=build /usr/lib/modules/6.8.0-56-generic/kernel/drivers/char/ipmi/*.ko /
 COPY check.sh /check.sh
 ENTRYPOINT ["/bin/sh", "/check.sh"]
