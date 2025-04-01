@@ -1,4 +1,4 @@
-Subject: [PATCH] Added support for newer Ubuntu kernels
+Subject: [PATCH] Added support for newer Ubuntu kernels. Adjusted mount size for /run and /var.
 
 Added build of ubuntu-based kernel image.
 Added nouveau NVIDIA driver to modules blacklist.
@@ -111,3 +111,26 @@ diff --git a/contrib/foreign-kernels/ubuntu.sh b/contrib/foreign-kernels/ubuntu.
 +DEB_URLS="${KERNEL_DEB} ${HEADERS_DEB} ${HEADERS_ALL_DEB} ${MODULES_DEB} ${MODULES_EXTRA_DEB}"
 
  docker build -t "${REPO}:${VER1}.${VER2}" -f Dockerfile.deb --no-cache --build-arg DEB_URLS="${DEB_URLS}" .
+
+Index: pkg/init/cmd/rc.init/main.go
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pkg/init/cmd/rc.init/main.go b/pkg/init/cmd/rc.init/main.go
+--- a/pkg/init/cmd/rc.init/main.go	(revision e25cc72531467959b0d6cfe46b4e8f3c548217f0)
++++ b/pkg/init/cmd/rc.init/main.go	(date 1743522312884)
+@@ -170,11 +170,11 @@
+ 	mountSilent("", "/", "", remount|readonly, "")
+
+ 	// mount tmpfs for /tmp and /run
+-	mount("tmpfs", "/run", "tmpfs", nodev|nosuid|noexec|relatime, "size=10%,mode=755")
++	mount("tmpfs", "/run", "tmpfs", nodev|nosuid|noexec|relatime, "size=40%,mode=755")
+ 	mount("tmpfs", "/tmp", "tmpfs", nodev|nosuid|noexec|relatime, "size=10%,mode=1777")
+
+ 	// mount tmpfs for /var. This may be overmounted with a persistent filesystem later
+-	mount("tmpfs", "/var", "tmpfs", nodev|nosuid|noexec|relatime, "size=50%,mode=755")
++	mount("tmpfs", "/var", "tmpfs", nodev|nosuid|noexec|relatime, "size=20%,mode=755")
+ 	// add standard directories in /var
+ 	mkdir("/var/cache", 0755)
+ 	mkdir("/var/empty", 0555)
