@@ -130,7 +130,9 @@ func downloadFile(filepath string, url string) error {
 		if err == nil {
 			break
 		}
-		resp.Body.Close()
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
 
 		if retries == maxRetryCount-1 {
 			return err
