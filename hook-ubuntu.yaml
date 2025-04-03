@@ -30,7 +30,7 @@ onboot:
     binds:
       - /dev:/dev
       - /lib/modules:/lib/modules
-      - /usr/lib/firmware:/usr/lib/firmware
+#      - /usr/lib/firmware:/usr/lib/firmware
     capabilities:
       - all
 
@@ -156,8 +156,8 @@ files:
   - path: root/.ssh/
     directory: true
 
-  - path: /usr/lib/firmware
-    directory: true
+#  - path: /usr/lib/firmware
+#    directory: true
 
 trust:
   org:
