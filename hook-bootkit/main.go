@@ -138,8 +138,8 @@ func main() {
 			"/sys/dev:/sys/dev",
 			"/sys/devices:/sys/devices",
 			"/sys/module:/sys/module",
-			//"/lib/firmware:/lib/firmware",
-			//"/usr/lib/firmware:/usr/lib/firmware",
+			"/lib/firmware:/lib/firmware",
+			"/usr/lib/firmware:/usr/lib/firmware",
 		},
 		Mounts: []mount.Mount{
 			{
@@ -196,6 +196,14 @@ func main() {
 	_, err = io.Copy(os.Stdout, out)
 	if err != nil {
 		panic(err)
+	}
+
+	// prepare /lib/firmware symlink
+	sErr := os.Symlink("/usr/lib/firmware", "/lib/firmware")
+	if sErr == nil {
+		fmt.Println("Created /lib/firmware symlink")
+	} else {
+		fmt.Println("/lib/firmware symlink creation failed:", sErr)
 	}
 
 	resp, err := cli.ContainerCreate(ctx, tinkContainer, tinkHostConfig, nil, nil, "")
