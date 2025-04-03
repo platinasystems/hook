@@ -11,16 +11,15 @@ RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu22
 
 RUN apt update && apt install -y linux-headers-5.15.0-105-generic kmod nvidia-driver-535
 RUN apt install -y linux-modules-extra-5.15.0-105-generic
-#RUN apt install -y quilt bison lsb-base chrpath pkg-config tcl swig graphviz flex debhelper tk libfuse2t64 lsof ethtool pciutils
-#
-### Mellanox OFED
-#RUN curl --output MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz https://content.mellanox.com/ofed/MLNX_OFED-24.10-2.1.8.0/MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz && \
-#    tar xf /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz && \
-#    rm /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64.tgz
-#WORKDIR MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu24.04-x86_64
-#
-## take snapshot
-#RUN ./mlnxofedinstall -k 5.15.0-105-generic --force --without-fw-update --without-xpmem-dkms --kernel-only -k 5.15.0-105-generic
+RUN apt install -y quilt bison lsb-base chrpath pkg-config tcl swig graphviz flex debhelper tk lsof ethtool pciutils
+
+## Mellanox OFED
+RUN curl --output MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu22.04-x86_64.tgz https://content.mellanox.com/ofed/MLNX_OFED-24.10-2.1.8.0/MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu22.04-x86_64.tgz && \
+    tar xf /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu22.04-x86_64.tgz && \
+    rm /MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu22.04-x86_64.tgz
+WORKDIR MLNX_OFED_LINUX-24.10-2.1.8.0-ubuntu22.04-x86_64
+
+RUN ./mlnxofedinstall -k 5.15.0-105-generic --force --without-fw-update --without-xpmem-dkms --kernel-only -k 5.15.0-105-generic
 
 FROM ubuntu:jammy-20240530
 RUN apt update && apt install -y kmod
