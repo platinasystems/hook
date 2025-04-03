@@ -96,8 +96,6 @@ services:
       - /sys/dev:/sys/dev
       - /sys/devices:/sys/devices
       - /sys/module:/sys/module
-      - /lib/firmware:/lib/firmware
-      - /usr/lib/firmware:/usr/lib/firmware
     runtime:
       mkdir:
         - /var/run/images
@@ -122,8 +120,6 @@ services:
       - /sys/devices:/sys/devices
       - /sys/module:/sys/module
       - /run:/run
-      - /lib/firmware:/lib/firmware
-      - /usr/lib/firmware:/usr/lib/firmware
     runtime:
       mkdir:
         - /var/run/docker
