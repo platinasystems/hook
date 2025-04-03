@@ -30,6 +30,7 @@ onboot:
     binds:
       - /dev:/dev
       - /lib/modules:/lib/modules
+      - /lib/firmware:/lib/firmware
       - /usr/lib/firmware:/usr/lib/firmware
     capabilities:
       - all
@@ -46,6 +47,8 @@ services:
       - /etc/profile.d/local.sh:/etc/profile.d/local.sh
       - /etc/motd:/etc/motd
       - /proc:/proc
+      - /lib:/lib
+      - /usr:/usr
     env:
       - INSECURE=true
 
@@ -95,6 +98,8 @@ services:
       - /sys/dev:/sys/dev
       - /sys/devices:/sys/devices
       - /sys/module:/sys/module
+      - /lib/firmware:/lib/firmware
+      - /usr/lib/firmware:/usr/lib/firmware
     runtime:
       mkdir:
         - /var/run/images
@@ -119,6 +124,8 @@ services:
       - /sys/devices:/sys/devices
       - /sys/module:/sys/module
       - /run:/run
+      - /lib/firmware:/lib/firmware
+      - /usr/lib/firmware:/usr/lib/firmware
     runtime:
       mkdir:
         - /var/run/docker
@@ -129,6 +136,8 @@ services:
       - /run/authorized_keys:/root/.ssh/authorized_keys
       - /etc/profile.d/local.sh:/etc/profile.d/local.sh
       - /etc/motd:/etc/motd
+      - /lib:/lib
+      - /usr:/usr
 
 files:
   - path: etc/profile.d/local.sh
