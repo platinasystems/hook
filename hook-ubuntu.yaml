@@ -46,8 +46,6 @@ services:
       - /etc/profile.d/local.sh:/etc/profile.d/local.sh
       - /etc/motd:/etc/motd
       - /proc:/proc
-      - /lib:/lib
-      - /usr:/usr
     env:
       - INSECURE=true
 
@@ -131,8 +129,6 @@ services:
       - /run/authorized_keys:/root/.ssh/authorized_keys
       - /etc/profile.d/local.sh:/etc/profile.d/local.sh
       - /etc/motd:/etc/motd
-      - /lib:/lib
-      - /usr:/usr
 
 files:
   - path: etc/profile.d/local.sh
