@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb -o cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && \
-    echo "deb http://archive.ubuntu.com/ubuntu/ lunar universe" >> /etc/apt/sources.list.d/lunar-universe.list && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt update && apt install -y linux-headers-5.15.0-105-generic kmod nvidia-driver-535
