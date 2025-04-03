@@ -10,6 +10,7 @@ onboot:
     binds:
       - /dev:/dev
       - /lib/modules:/lib/modules
+      - /usr/lib/firmware:/usr/lib/firmware
     capabilities:
       - all
   - name: poweroff
