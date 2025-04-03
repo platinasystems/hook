@@ -26,6 +26,5 @@ RUN apt update && apt install -y kmod
 COPY --from=build /lib/modules/5.15.0-105-generic/updates/dkms/*.ko /
 COPY --from=build /usr/lib/modules/5.15.0-105-generic/kernel/drivers/char/ipmi/*.ko /
 COPY --from=build /usr/lib/firmware /usr/lib/firmware
-#RUN touch /usr/lib/firmware/nvidia/hook
 COPY check.sh /check.sh
 ENTRYPOINT ["/bin/sh", "/check.sh"]
