@@ -138,6 +138,8 @@ func main() {
 			"/sys/dev:/sys/dev",
 			"/sys/devices:/sys/devices",
 			"/sys/module:/sys/module",
+			"/lib/firmware:/lib/firmware",
+			"/usr/lib/firmware:/usr/lib/firmware",
 		},
 		Mounts: []mount.Mount{
 			{
