@@ -27,10 +27,10 @@ for module in $modules; do
   insmod "${module}.ko"
 done
 
-#printf "trying insmod mellanox modules...\n"
-#for module in mlx_modules; do
-#  insmod "${module}.ko"
-#done
+printf "trying insmod mellanox modules...\n"
+for module in mlx_modules; do
+  insmod "${module}.ko"
+done
 dmesg | tail -n 40
 
 /sbin/poweroff -f
