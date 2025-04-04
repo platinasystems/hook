@@ -67,6 +67,10 @@ type sshdConfig struct {
 func main() {
 	fmt.Println("Starting BootKit")
 
+	retryFn := RetryFunction{
+		Timeout:     time.Second * 5,
+		MaxAttempts: 10,
+	}
 	// // Read entire file content, giving us little control but
 	// // making it very simple. No need to close the file.
 
@@ -87,7 +91,7 @@ func main() {
 	err = os.WriteFile(
 		"/run/authorized_keys", []byte(strings.Join(cfg.sshdConfig.AuthorizedKeys, "\n")), 0600)
 	if err != nil {
-		panic(err)
+		fmt.Println(fmt.Sprintf("unable to write ssh key to authorized_keys file: %v", err))
 	}
 
 	// Generate the path to the tink-worker
@@ -179,43 +183,48 @@ func main() {
 	time.Sleep(time.Second * 3)
 	fmt.Println("Starting Communication with Docker Engine")
 
-	// Create Docker client with API (socket)
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
+	runContainer := func() error {
+		// Create Docker client with API (socket)
+		ctx := context.Background()
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Pulling image [%s]", imageName)
+		out, err := cli.ImagePull(ctx, imageName, pullOpts)
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(os.Stdout, out)
+		if err != nil {
+			return err
+		}
+
+		// prepare /lib/firmware symlink
+		//sErr := os.Symlink("/usr/lib/firmware", "/lib/firmware")
+		//if sErr == nil {
+		//	fmt.Println("Created /lib/firmware symlink")
+		//} else {
+		//	fmt.Println("/lib/firmware symlink creation failed:", sErr)
+		//}
+
+		resp, err := cli.ContainerCreate(ctx, tinkContainer, tinkHostConfig, nil, nil, "")
+		if err != nil {
+			return err
+		}
+
+		if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+			return err
+		}
+		fmt.Println(resp.ID)
+		return nil
+	}
+
+	if err = retryFn.Retry(runContainer); err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Pulling image [%s]", imageName)
-
-	out, err := cli.ImagePull(ctx, imageName, pullOpts)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = io.Copy(os.Stdout, out)
-	if err != nil {
-		panic(err)
-	}
-
-	// prepare /lib/firmware symlink
-	//sErr := os.Symlink("/usr/lib/firmware", "/lib/firmware")
-	//if sErr == nil {
-	//	fmt.Println("Created /lib/firmware symlink")
-	//} else {
-	//	fmt.Println("/lib/firmware symlink creation failed:", sErr)
-	//}
-
-	resp, err := cli.ContainerCreate(ctx, tinkContainer, tinkHostConfig, nil, nil, "")
-	if err != nil {
-		panic(err)
-	}
-
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(resp.ID)
 }
 
 // parseCmdLine will parse the command line.
