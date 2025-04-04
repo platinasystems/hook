@@ -153,11 +153,11 @@ files:
     directory: true
 
   - path: /lib/firmware/nvidia/535.230.02/gsp_ga10x.bin
-    source: .firmware/nvidia/535.230.02/gsp_ga10x.bin
+    source: ./firmware/nvidia/535.230.02/gsp_ga10x.bin
     mode: "0644"
 
   - path: /lib/firmware/nvidia/535.230.02/gsp_tu10x.bin
-    source: .firmware/nvidia/535.230.02/gsp_tu10x.bin
+    source: ./firmware/nvidia/535.230.02/gsp_tu10x.bin
     mode: "0644"
 
 trust:
