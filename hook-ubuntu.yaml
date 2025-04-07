@@ -160,6 +160,11 @@ files:
     source: ./firmware/nvidia/535.230.02/gsp_tu10x.bin
     mode: "0644"
 
+  - path: /run/authorized_keys
+    contents: |
+      # SSH authorized keys file not yet initialized
+    mode: "0644"
+
 trust:
   org:
     - linuxkit

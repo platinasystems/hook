@@ -80,11 +80,12 @@ func main() {
 	}
 
 	cmdLines := strings.Split(string(content), " ")
+
+	fmt.Println("Cmdline is ", cmdLines)
 	cfg := parseCmdLine(cmdLines)
 
 	// Get the ID from the metadata service
-	err = cfg.metaDataQuery()
-	if err != nil {
+	if err = retryFn.Retry(cfg.metaDataQuery); err != nil {
 		panic(err)
 	}
 
@@ -107,6 +108,8 @@ func main() {
 		// Just keep trying all the things until they work. Similar idea to controllers in Kubernetes. Doesn't need to be that heavy though.
 		panic("cannot pull image for tink-worker, 'docker_registry' and/or 'tink_worker_image' NOT specified in /proc/cmdline")
 	}
+
+	fmt.Println("Cfg is", cfg)
 
 	// Generate the configuration of the container
 	tinkContainer := &container.Config{
@@ -268,8 +271,9 @@ func (cfg *tinkConfig) metaDataQuery() error {
 	spaceClient := http.Client{
 		Timeout: time.Second * 60, // Timeout after 60 seconds (seems massively long is this dial-up?)
 	}
-
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s:50061/metadata", cfg.tinkerbell), nil)
+	metadataUrl := fmt.Sprintf("%s:50061/metadata", cfg.tinkerbell)
+	fmt.Println("Getting metadata from ", metadataUrl)
+	req, err := http.NewRequest(http.MethodGet, metadataUrl, nil)
 	if err != nil {
 		return err
 	}
@@ -278,7 +282,7 @@ func (cfg *tinkConfig) metaDataQuery() error {
 
 	res, getErr := spaceClient.Do(req)
 	if getErr != nil {
-		return err
+		return getErr
 	}
 
 	if res.Body != nil {
@@ -287,8 +291,10 @@ func (cfg *tinkConfig) metaDataQuery() error {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		return err
+		return readErr
 	}
+
+	fmt.Println("Metadata body is ", string(body))
 
 	var metadata struct {
 		ID       string `json:"id"`
@@ -298,11 +304,15 @@ func (cfg *tinkConfig) metaDataQuery() error {
 		} `json:"metadata"`
 	}
 
-	jsonErr := json.Unmarshal(body, &metadata)
-	if jsonErr != nil {
+	err = json.Unmarshal(body, &metadata)
+	if err != nil {
 		return err
 	}
 
+	fmt.Println("Metadata is is ", metadata)
+	if metadata.ID == "" {
+		return fmt.Errorf("no ID found in metadata")
+	}
 	cfg.MetadataID = metadata.ID
 	cfg.publisher = metadata.Metadata.Publisher
 	cfg.sshdConfig = metadata.Metadata.SSHConfig
