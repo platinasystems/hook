@@ -71,7 +71,7 @@ services:
     image: linuxkit/node_exporter:9bcd8479b7ba2844773ef4f01a60c901c4800982
 
   - name: hook-docker
-    image: quay.io/tinkerbell/hook-docker:latest
+    image: quay.io/tinkerbell/hook-docker:dec42392c3d3
     capabilities:
       - all
     net: host
